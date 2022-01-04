@@ -1,0 +1,13 @@
+{
+    "section1":{
+        "commment":"key1",
+        "key":"key1",
+        "number": 1
+    },
+
+    "section2":{
+        "commment":"key1",
+        "key":"key2",
+        "number": 2
+    }
+}

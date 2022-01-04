@@ -1,0 +1,12 @@
+os
+typing
+urllib
+selenium
+selenium.webdriver.common.keys
+selenium.webdriver.chrome.options
+import chromedriver_binary
+selenium.webdriver.common.by
+time
+tkinter
+csv
+re
