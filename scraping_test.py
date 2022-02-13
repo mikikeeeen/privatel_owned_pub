@@ -146,8 +146,6 @@ def filter_near_station_store(storename, user_input_place):
     elif check_flag == 1:
         return ''
 
-    
-
 # aタグのリストから店名とリンクを抜いてくるメソッド
 def get_storename_and_link(a_tag_list, user_input_place):
     # リンクは全て「https://tabelog.com/tokyo/A1304/A130401/13260630」みたいなフォーマットをしている
@@ -174,8 +172,8 @@ def get_storename_and_link(a_tag_list, user_input_place):
 # 食べログより個人経営の店を取得してくるメソッド
 def tabelog_private_store_main(user_input_place):
     # optionはヘッドレス(非表示)でスクレイピングをするためのオプション
-    options = Options()
-    options.add_argument('--headless')
+    # options = Options()
+    # options.add_argument('--headless')
     # ①：まずは入力された値を食べログで検索をする
     # driver = webdriver.Chrome(chrome_options = options)
     driver = webdriver.Chrome()
@@ -194,6 +192,16 @@ def tabelog_private_store_main(user_input_place):
 
     # ②：次に検索遷移後の画面のソースを取得するメソッド
     source_html = driver.page_source
+
+    # 後で削除してほしいところ==================
+    # 取得したソースを別ファイルに出力する
+    path = '/Users/mikiken/Desktop/test_scr2.txt'
+    f = open(path, 'w')
+    # ファイルの中身
+    f.write(str(source_html))
+    # ====================================
+
+
     # ほしいaタグが書いてある箇所
     a_link_pattern = r'<a\sclass=\"list-rst__rst-name-target\scpy-rst-name\"\starget=\"_blank\"\srel=\"noopener\"\sdata-list-dest=\"item_top\"\shref=\"https.+>.+</a>'
     # ちなみにこんな感じの部分を取得したかった
@@ -204,6 +212,9 @@ def tabelog_private_store_main(user_input_place):
     # ====================================================================================
     # 該当する部分のaタグ(店名、リンクが含まれる)を取得
     a_tag_list = re.findall(a_link_pattern, source_html)
+
+    print(a_tag_list)
+    
     # 店名とリンクを取得するメソッド
     get_storename_and_link(a_tag_list, user_input_place)
     time.sleep(5)

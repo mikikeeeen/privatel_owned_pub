@@ -1,0 +1,13 @@
+ - vs=1
+ - sa=新宿駅
+ - sk=居酒屋
+ - lid=top_navi1
+ - vac_net=
+ - svd=20220108
+ - svt=1900
+ - svps=2
+ - hfc=1
+ - Cat=RC
+ - LstCat=RC21
+ - LstCatD=RC2101
+ - cat_sk=居酒屋

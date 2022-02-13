@@ -1,4 +1,7 @@
 import re
+import urllib.parse
+from bs4 import BeautifulSoup    # importする
+import requests
 
 # <a class="list-rst__rst-name-target cpy-rst-name
 def test_regexp():
@@ -34,9 +37,36 @@ def regexp_test_func():
     result_new = re.findall(a_link_pattern, file_contents)
     print(result_new)
 
+# <a class="list-rst__rst-name-target cpy-rst-name" data-list-dest="item_top" href="https://tabelog.com/tokyo/A1304/A130403/13194360/" rel="noopener" target="_blank">
+
+
 def test_split():
     str = 'test'
     print(len(str.split(' ')))
+
+
+def test_scraping_bs4():
+    # 該当するaタグが書いてある箇所を集めたリスト
+    a_tag_list = []
+
+    load_url = "https://tabelog.com/tokyo/A1304/A130401/R5172/rstLst/?vs=1&sa=%E6%96%B0%E5%AE%BF%E9%A7%85&sk=%25E5%25B1%2585%25E9%2585%2592%25E5%25B1%258B&lid=top_navi1&vac_net=&svd=20220108&svt=1900&svps=2&hfc=1&Cat=RC&LstCat=RC21&LstCatD=RC2101&cat_sk=%E5%B1%85%E9%85%92%E5%B1%8B"
+    html = requests.get(load_url)
+    soup = BeautifulSoup(html.content, "html.parser")
+
+    soup = str(soup)
+    # なんか帰ってくるaタグの状況が違うのでこちらではscraping_test.pyとは違う正規表現を書いている
+    # storelink_pattern = r'<a\sclass=\"list-rst__rst-name-target\scpy-rst-name\"\starget=\"_blank\"\srel=\"noopener\"\sdata-list-dest=\"item_top\"\shref=\"https.+>.+</a>'
+    storelink_pattern = r'<a\sclass=\"list-rst__rst-name-target\scpy-rst-name\"\sdata-list-dest=\"item_top\"\shref=\"https.+\"\srel=\"noopener\"\starget=\"_blank\">.+</a>'
+    a_tag_list = re.findall(storelink_pattern, soup)
+    print(a_tag_list)
+
+    # 後で削除しておいて欲しい部分=======================
+    # 取得したソースを別ファイルに出力する
+    path = '/Users/mikiken/Desktop/test_scr3.txt'
+    f = open(path, 'w')
+    # ファイルの中身
+    f.write(str(soup))
+    # ================================================
 
 if __name__ == '__main__':
     # なんか正規表現のチェックをしてたメソッド
