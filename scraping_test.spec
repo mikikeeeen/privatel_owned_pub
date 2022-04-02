@@ -3,7 +3,6 @@
 
 block_cipher = None
 
-
 a = Analysis(['scraping_test.py'],
              pathex=['/Users/mikiken/Desktop/Script/Python/Scraping_App'],
              binaries=[],
