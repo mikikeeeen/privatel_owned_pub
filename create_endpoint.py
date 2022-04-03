@@ -80,7 +80,7 @@ def endpoint_finder(lapcount):
                     cur_url = driver.current_url
                     dict_station_url[station_name] = cur_url
                     # 10回ループしたらやめる(DDos攻撃の防止)
-                    if loop_count == 2:
+                    if loop_count == 3:
                         break
     return dict_station_url
 
@@ -90,11 +90,73 @@ def incre_count(lapcount):
     f = open('ManageCount/ManageCount.txt', 'w')
     f.write(str(newcount))
 
+def create_report(dic_sta_and_url):
+    print(dic_sta_and_url)
+    urlsplited = []
+
+    # csvを読み込み
+    with open('report/report.csv', 'a', newline = '') as reportcsv:
+        writer = csv.writer(reportcsv)
+        # 参考として帰ってくるURLを貼り付ける：赤土小学校前': 'https://tabelog.com/tokyo/A1324/A132401/R11091/rstLst/?vs=1&sa=%E8%B5%A4%E5%9C%9F%E5%B0%8F%E5%AD%A6%E6%A0%A1%E5%89%8D&sk=%25E5%25B1%2585%25E9%2585%2592%25E5%25B1%258B&lid=top_navi1&vac_net=&svd=20220402&svt=1900&svps=2&hfc=1&Cat=RC&LstCat=RC21&LstCatD=RC2101&cat_sk=%E5%B1%85%E9%85%92%E5%B1%8B'
+        for station in dic_sta_and_url:
+            # URLを/で分割
+            urlsplited =  dic_sta_and_url[station].split("/")
+            # 各項目を変数化(詳細はCSVのヘッダーを参照)
+            url = dic_sta_and_url[station]
+            first  = urlsplited[3]
+            second = urlsplited[4]
+            third  = urlsplited[5]
+            forth  = urlsplited[6]
+            fifth  = urlsplited[7]
+            # 以下はクエリパラメータに関する変数化
+            queryparamsplit = urlsplited[8].split("&")
+            vs      = queryparamsplit[0].replace("?vs=", "")
+            sa      = queryparamsplit[1].replace("sa=", "")
+            sk      = queryparamsplit[2].replace("sk=", "")
+            lid     = queryparamsplit[3].replace("lid=", "")
+            vac_net = queryparamsplit[4].replace("vac_net", "")
+            svd     = queryparamsplit[5].replace("svd=", "")
+            svt     = queryparamsplit[6].replace("svt=", "")
+            svps    = queryparamsplit[7].replace("svps=", "")
+            hfc     = queryparamsplit[8].replace("hfc=", "")
+            Cat     = queryparamsplit[9].replace("Cat=", "")
+            LstCat  = queryparamsplit[10].replace("LstCat", "")
+            LstCatD = queryparamsplit[11].replace("LstCatD", "")
+            cat_sk  = queryparamsplit[12].replace("cat_sk", "")
+
+            # CSVへの書き込み(１行ずつ)
+            writer.writerow(
+                [
+                    station,
+                    url,
+                    first,
+                    second,
+                    third,
+                    forth,
+                    fifth,
+                    vs,
+                    sa,
+                    sk,
+                    lid,
+                    vac_net,
+                    svd,
+                    svt,
+                    svps,
+                    hfc,
+                    Cat,
+                    LstCat,
+                    LstCatD,
+                    cat_sk
+                ]
+                
+            )
+
+
 if __name__ == '__main__':
     # 何周目の処理なのかを管理する
     lapcount = 0
     # カウントをリセットするためのメソッド
-    resetresult=  check_reset()
+    resetresult =  check_reset()
 
     # 今何周目なのかを認識(別テキストファイルにて管理しているため、それを読み込む)
     # リセットされた場合は当然ラップカウントは0なのでpassをする
@@ -111,6 +173,7 @@ if __name__ == '__main__':
     # このタイミングでカウントを一つ増やす(処理が完了したので)
     incre_count(lapcount)
     # レポート作成する
+    create_report(dic_sta_and_url)
 
 
  
