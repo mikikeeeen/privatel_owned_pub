@@ -1,4 +1,5 @@
 import csv
+from posixpath import split
 from tabnanny import check
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
@@ -79,8 +80,11 @@ def endpoint_finder(lapcount):
                     # ②：今表示されているURLを取得
                     cur_url = driver.current_url
                     dict_station_url[station_name] = cur_url
+
+                    # 確認用print
+                    print('駅名：' + station_name + '\nURL：' + cur_url)
                     # 10回ループしたらやめる(DDos攻撃の防止)
-                    if loop_count == 3:
+                    if loop_count == 10:
                         break
     return dict_station_url
 
@@ -91,43 +95,65 @@ def incre_count(lapcount):
     f.write(str(newcount))
 
 def create_report(dic_sta_and_url):
-    print(dic_sta_and_url)
+    # 全てのリストを表示
+    # print(dic_sta_and_url)
     urlsplited = []
 
     # csvを読み込み
-    with open('report/report.csv', 'a', newline = '') as reportcsv:
+    with open('report/report.csv', 'a', encoding = 'cp932') as reportcsv:
         writer = csv.writer(reportcsv)
         # 参考として帰ってくるURLを貼り付ける：赤土小学校前': 'https://tabelog.com/tokyo/A1324/A132401/R11091/rstLst/?vs=1&sa=%E8%B5%A4%E5%9C%9F%E5%B0%8F%E5%AD%A6%E6%A0%A1%E5%89%8D&sk=%25E5%25B1%2585%25E9%2585%2592%25E5%25B1%258B&lid=top_navi1&vac_net=&svd=20220402&svt=1900&svps=2&hfc=1&Cat=RC&LstCat=RC21&LstCatD=RC2101&cat_sk=%E5%B1%85%E9%85%92%E5%B1%8B'
         for station in dic_sta_and_url:
             # URLを/で分割
             urlsplited =  dic_sta_and_url[station].split("/")
             # 各項目を変数化(詳細はCSVのヘッダーを参照)
+            # ちなみに以下のif文はこーゆーエラーを避けるため→    fifth  = urlsplited[7]   IndexError: list index out of range
             url = dic_sta_and_url[station]
-            first  = urlsplited[3]
-            second = urlsplited[4]
-            third  = urlsplited[5]
-            forth  = urlsplited[6]
-            fifth  = urlsplited[7]
+            if len(urlsplited) >= 4:
+                first  = urlsplited[3]
+            if len(urlsplited) >= 5:
+                second = urlsplited[4]
+            if len(urlsplited) >= 6:
+                third  = urlsplited[5]
+            if len(urlsplited) >= 7:
+                forth  = urlsplited[6]
+            if len(urlsplited) >= 8:
+                fifth  = urlsplited[7]
+
             # 以下はクエリパラメータに関する変数化
-            queryparamsplit = urlsplited[8].split("&")
-            vs      = queryparamsplit[0].replace("?vs=", "")
-            sa      = queryparamsplit[1].replace("sa=", "")
-            sk      = queryparamsplit[2].replace("sk=", "")
-            lid     = queryparamsplit[3].replace("lid=", "")
-            vac_net = queryparamsplit[4].replace("vac_net", "")
-            svd     = queryparamsplit[5].replace("svd=", "")
-            svt     = queryparamsplit[6].replace("svt=", "")
-            svps    = queryparamsplit[7].replace("svps=", "")
-            hfc     = queryparamsplit[8].replace("hfc=", "")
-            Cat     = queryparamsplit[9].replace("Cat=", "")
-            LstCat  = queryparamsplit[10].replace("LstCat", "")
-            LstCatD = queryparamsplit[11].replace("LstCatD", "")
-            cat_sk  = queryparamsplit[12].replace("cat_sk", "")
+            queryparamsloca = len(urlsplited) - 1
+            queryparamsplit = urlsplited[queryparamsloca].split("&")
+            if len(queryparamsplit) >= 1:
+                vs      = queryparamsplit[0].replace("?vs=", "")
+            if len(queryparamsplit) >= 2:
+                sa      = queryparamsplit[1].replace("sa=", "")
+            if len(queryparamsplit) >= 3:
+                sk      = queryparamsplit[2].replace("sk=", "")
+            if len(queryparamsplit) >= 4:
+                lid     = queryparamsplit[3].replace("lid=", "")
+            if len(queryparamsplit) >= 5:
+                vac_net = queryparamsplit[4].replace("vac_net", "")
+            if len(queryparamsplit) >= 6:
+                svd     = queryparamsplit[5].replace("svd=", "")
+            if len(queryparamsplit) >= 7:
+                svt     = queryparamsplit[6].replace("svt=", "")
+            if len(queryparamsplit) >= 8:
+                svps    = queryparamsplit[7].replace("svps=", "")
+            if len(queryparamsplit) >= 9:
+                hfc     = queryparamsplit[8].replace("hfc=", "")
+            if len(queryparamsplit) >= 10:
+                Cat     = queryparamsplit[9].replace("Cat=", "")
+            if len(queryparamsplit) >= 11:
+                LstCat  = queryparamsplit[10].replace("LstCat=", "")
+            if len(queryparamsplit) >= 12:
+                LstCatD = queryparamsplit[11].replace("LstCatD=", "")
+            if len(queryparamsplit) >= 13:
+                cat_sk  = queryparamsplit[12].replace("cat_sk=", "")
 
             # CSVへの書き込み(１行ずつ)
             writer.writerow(
                 [
-                    station,
+                    '\n' + station,
                     url,
                     first,
                     second,
