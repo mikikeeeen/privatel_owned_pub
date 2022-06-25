@@ -1,7 +1,15 @@
 import re
 import urllib.parse
-from bs4 import BeautifulSoup    # importする
+from bs4 import BeautifulSoup
+from regex import W    # importする
 import requests
+import urllib.request
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.options import Options
+import chromedriver_binary             # パスを通すためのコード
+from selenium.webdriver.common.by import By
+import time
 
 # <a class="list-rst__rst-name-target cpy-rst-name
 def test_regexp():
@@ -68,12 +76,69 @@ def test_scraping_bs4():
     f.write(str(soup))
     # ================================================
 
+# やりたいことを殴り書き
+# 1. 俺のテキストファイルを読み込み
+# 2. １行ずつ取得する(三木とか書いてあれば無視する)
+# 3. .comと.netと.co.jpをつけてみてスクレイピング
+# 4. 検索してみた文言と結果をresultとして控える
+# 5. 4で作成したものをテキストファイルに保存する
+
+def domain_check(saigo):
+    searchword = ''
+    finalresult = {}
+    driver = webdriver.Chrome()
+    path = '/Users/mikiken/Desktop/domain_check_taisyo.txt'
+    f = open(path, 'r')
+    data = f.read()
+    datasplited = data.split('\n')
+    for i in range(len(datasplited)):
+        # print(datasplited[i])
+        if '三木' in datasplited[i] or '関' in datasplited[i] or '丸山' in datasplited[i] or '木原' in datasplited[i] or datasplited[i] == '':
+            pass
+        else:
+            # =====================.comの場合=====================
+            searchword = datasplited[i] + saigo
+            driver.get("https://tech-unlimited.com/whois.html")
+            # テキストエリアに検索の文言を入力
+            textarea_of_station = driver.find_element_by_id("init_focus_box")
+            textarea_of_station.send_keys(searchword)
+            time.sleep(1)
+            # 検索ボタンを押下
+            button_search = driver.find_element_by_xpath("//input[@name='submit_password']")
+            # print('=====')
+            # print(button_search)
+            # print('=====')
+            button_search.click()
+            time.sleep(2)
+            # 結果を取得
+            textarea_of_station = driver.find_element_by_id("result_pre")
+            result = textarea_of_station.get_attribute('innerHTML')
+            # 結果を○か✖️で判定
+            if 'No match' in result:
+                result = '使われていない'
+            else:
+                result = '使われてる'
+            finalresult[datasplited[i]] = result
+            # print(finalresultdotcom)
+    return finalresult
+
 if __name__ == '__main__':
     # なんか正規表現のチェックをしてたメソッド
     # test_regexp()
     # なんか正規表現がうまくいかないので色々と試行錯誤をしようと思う
     # regexp_test_func()
-    test_split()
-    
+    # test_split()
+    saigo = '.com'
+    dotcom = domain_check(saigo)
+    print(dotcom)
+    print('================')
+    saigo = '.net'
+    dotcom = domain_check(saigo)
+    print(dotcom)
+    print('================')
+    saigo = '.co.jp'
+    dotcom = domain_check(saigo)
+    print(dotcom)
 
+    
 

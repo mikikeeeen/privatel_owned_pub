@@ -12,7 +12,6 @@ import json
 import sys
 from tkinter import messagebox
 
-
 # カウントをリセットするかどうかを聞くメソッド(リセット処理も)
 def check_reset():
     # リセットをしたかどうかを確認するフラグ
@@ -177,12 +176,21 @@ def create_report(dic_sta_and_url):
                 
             )
 
+# if __name__ == '__main__':
+# checkskipはカウントリセットをスキップするかどうかを確認するためのもの(Yesならカウントリセットしないで進む)
+def create_endpoint(checkskip):
+    print('実行はされてる')
 
-if __name__ == '__main__':
+
     # 何周目の処理なのかを管理する
     lapcount = 0
-    # カウントをリセットするためのメソッド
-    resetresult =  check_reset()
+    # カウントリセット処理自体を飛ばさないとき
+    if checkskip == 'No':
+        # カウントをリセットするためのメソッド
+        resetresult =  check_reset()
+    # カウントリセット処理自体を飛ばすとき
+    elif checkskip == 'Yes':
+        resetresult = "notreseted"
 
     # 今何周目なのかを認識(別テキストファイルにて管理しているため、それを読み込む)
     # リセットされた場合は当然ラップカウントは0なのでpassをする
@@ -201,8 +209,6 @@ if __name__ == '__main__':
     # レポート作成する
     create_report(dic_sta_and_url)
 
-
- 
-
-    
+    # Dos攻撃を避けるために5分ほどスリープを入れる
+    time.sleep(300)
 
